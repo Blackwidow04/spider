@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💖 Be My Valentine?</title>
+    <style>
+      :root {
+        --bg1: #ffd6ea;
+        --bg2: #ffb9dc;
+        --bg3: #ff9bcc;
+        --card: rgba(255, 255, 255, 0.85);
+        --text: #5e1f46;
+        --accent: #ff3f9f;
+        --accent-dark: #d72779;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+        color: var(--text);
+        overflow: hidden;
+      }
+
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 20% 20%, var(--bg1), var(--bg2) 45%, var(--bg3));
+      }
+
+      .card {
+        width: min(92vw, 640px);
+        min-height: 380px;
+        padding: 28px;
+        border-radius: 28px;
+        background: var(--card);
+        border: 2px solid rgba(255, 63, 159, 0.35);
+        box-shadow: 0 20px 45px rgba(153, 20, 92, 0.22);
+        text-align: center;
+        position: relative;
+        backdrop-filter: blur(4px);
+      }
+
+      .top {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        line-height: 1.1;
+      }
+
+      .sub {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .buttons {
+        position: relative;
+        margin-top: 34px;
+        min-height: 190px;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.18s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px) scale(1.02);
+      }
+
+      #yesBtn {
+        background: linear-gradient(120deg, var(--accent), #ff69b9);
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(255, 63, 159, 0.35);
+      }
+
+      #noBtn {
+        position: absolute;
+        left: calc(50% + 95px);
+        top: 0;
+        background: #fff;
+        color: var(--accent-dark);
+        border: 2px solid #ff9ecc;
+      }
+
+      #result {
+        margin-top: 20px;
+        min-height: 34px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--accent-dark);
+      }
+
+      .float-hearts {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+      }
+
+      .float-hearts span {
+        position: absolute;
+        bottom: -40px;
+        animation: up linear infinite;
+        opacity: 0.85;
+      }
+
+      .float-hearts span:nth-child(1) { left: 8%; font-size: 24px; animation-duration: 8s; }
+      .float-hearts span:nth-child(2) { left: 24%; font-size: 30px; animation-duration: 10s; animation-delay: 1s; }
+      .float-hearts span:nth-child(3) { left: 40%; font-size: 22px; animation-duration: 9s; animation-delay: 0.4s; }
+      .float-hearts span:nth-child(4) { left: 56%; font-size: 28px; animation-duration: 11s; animation-delay: 1.6s; }
+      .float-hearts span:nth-child(5) { left: 72%; font-size: 24px; animation-duration: 9.5s; animation-delay: 0.9s; }
+      .float-hearts span:nth-child(6) { left: 88%; font-size: 32px; animation-duration: 12s; animation-delay: 1.2s; }
+
+      @keyframes up {
+        from {
+          transform: translateY(0) scale(0.95) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.85;
+        }
+        to {
+          transform: translateY(-115vh) scale(1.2) rotate(18deg);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <p class="top">💌 just one tiny question 💌</p>
+      <h1>Will you be my Valentine?</h1>
+      <p class="sub">You can click <b>Yes</b>... but <b>No</b> is feeling shy today 🥹</p>
+
+      <div class="buttons" id="buttons">
+        <button id="yesBtn">Yes, of course! 💖</button>
+        <button id="noBtn" aria-label="No option">No 😢</button>
+      </div>
+
+      <p id="result" aria-live="polite"></p>
+    </main>
+
+    <div class="float-hearts" aria-hidden="true">
+      <span>💗</span>
+      <span>💖</span>
+      <span>💕</span>
+      <span>💘</span>
+      <span>💞</span>
+      <span>💓</span>
+    </div>
+
+    <script>
+      const zone = document.getElementById("buttons");
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const result = document.getElementById("result");
+
+      function moveNoButton() {
+        const zoneRect = zone.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+
+        const maxX = Math.max(0, zoneRect.width - btnRect.width);
+        const maxY = Math.max(0, zoneRect.height - btnRect.height);
+
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+      }
+
+      ["mouseenter", "mousemove", "click", "touchstart"].forEach((e) => {
+        noBtn.addEventListener(e, moveNoButton);
+      });
+
+      zone.addEventListener("mousemove", (e) => {
+        const rect = noBtn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        if (Math.abs(e.clientX - cx) < 100 && Math.abs(e.clientY - cy) < 70) {
+          moveNoButton();
+        }
+      });
+
+      yesBtn.addEventListener("click", () => {
+        result.textContent = "YAYYY 💝 Best Valentine answer ever!!";
+        yesBtn.textContent = "Chosen: YES 💕";
+      });
+    </script>
+  </body>
+</html>
